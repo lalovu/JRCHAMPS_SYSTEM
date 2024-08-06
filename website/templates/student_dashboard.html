@@ -89,7 +89,7 @@
         cursor: pointer;
         transition: background-color 0.3s;
         font-family: 'Open Sans', sans-serif;
-        text-align: left;
+        text-align: center;
         align-items: center;
     }
     .announcement-container:hover {
@@ -132,9 +132,6 @@
         text-decoration: none;
         cursor: pointer;
     }
-    .info-title {
-        font-weight: bold;
-    }
 
 </style>
 
@@ -170,21 +167,20 @@
 
     <div id="student-info-container" class="student-info-container">
         <div id="student-info-dialog" class="student-info">
-            <p id="email-info"><span class="info-title">Email:</span> {{ student.email }}</p>
-            <p id="student-name-info"><span class="info-title">Student's Name:</span> {{ student.student_name }}</p>
-            <p id="dob-info"><span class="info-title">Date of Birth:</span> {{ student.date_of_birth }}</p>
-            <p id="gender-info"><span class="info-title">Gender:</span> {{ student.gender }}</p>
-            <p id="nationality-info"><span class="info-title">Nationality:</span> {{ student.nationality }}</p>
-            <p id="address-info"><span class="info-title">Address:</span> {{ student.address }}</p>
-            <p id="guardian-info"><span class="info-title">Guardian's Full Name:</span> {{ student.parent_guardian_name }}</p>
-            <p id="relationship-info"><span class="info-title">Relationship to Student:</span> {{ student.relationship_to_student }}</p>
-            <p id="contact-info"><span class="info-title">Guardian's Contact Number:</span> {{ student.contact_number }}</p>
-            <p id="guardian-email-info"><span class="info-title">Guardian's Email:</span> {{ student.email_gp }}</p>
-            <p id="emergency-contact-info"><span class="info-title">Emergency Contact's Name:</span> {{ student.emergency_contact_name }}</p>
-            <p id="emergency-relationship-info"><span class="info-title">Emergency Relationship to Student:</span> {{ student.emergency_relationship }}</p>
-            <p id="emergency-contact-number-info"><span class="info-title">Emergency Contact's Number:</span> {{ student.emergency_contact_number }}</p>
+            <p id="email-info">Email: {{ student.email }}</p>
+            <p id="student-name-info">Student's Name: {{ student.student_name }}</p>
+            <p id="dob-info">Date of Birth: {{ student.date_of_birth }}</p>
+            <p id="gender-info">Gender: {{ student.gender }}</p>
+            <p id="nationality-info">Nationality: {{ student.nationality }}</p>
+            <p id="address-info">Address: {{ student.address }}</p>
+            <p id="guardian-info">Guardian's Full Name: {{ student.parent_guardian_name }}</p>
+            <p id="relationship-info">Relationship to Student: {{ student.relationship_to_student }}</p>
+            <p id="contact-info">Guardian's Contact Number: {{ student.contact_number }}</p>
+            <p id="guardian-email-info">Guardian's Email: {{ student.email_gp }}</p>
+            <p id="emergency-contact-info">Emergency Contact's Name: {{ student.emergency_contact_name }}</p>
+            <p id="emergency-relationship-info">Emergency Relationship to Student: {{ student.emergency_relationship }}</p>
+            <p id="emergency-contact-number-info">Emergency Contact's Number: {{ student.emergency_contact_number }}</p>
         </div>
-        
     </div>
 
     <!-- Add this code where you want to display announcements -->
@@ -201,8 +197,8 @@
     {% endif %}
 
     <!-- Modal HTML (Add this somewhere in your template) -->
-     <div id="announcement-modal" class="modal">
-        <div class="modal-content">
+<div id="announcement-modal" class="modal">
+    <div class="modal-content">
         <span class="close">&times;</span>
         <h2 id="announcement-modal-title"></h2>
         <p id="announcement-modal-content"></p>
@@ -278,7 +274,7 @@
     });
     
 </script>
-
 {% endblock %}
+
 
 

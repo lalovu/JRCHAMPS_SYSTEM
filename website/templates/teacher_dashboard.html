@@ -245,51 +245,14 @@
         position: relative;
     }
     
-    #subjects-section {
-        display: none;
-        padding: 20px;
-        margin-left: 250px;
-        margin-top: 55px;
+    .subject-tile h3 {
+        margin: 0;
     }
     
-    .curriculum-container {
-        padding: 20px;
-        margin-bottom: 10px;
-        background-color: #f0e68cab;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        text-align: left;
-        align-items: center;
-        width: 100%;
-        max-width: 1000px;
-        box-sizing: border-box;
-        height: auto;
-        max-height: 110px;
-        overflow: hidden;
-    }
-
-    .curriculum-container:hover {
-        background-color: #e7da63cc;
-    }
-
-    .curriculum-details {
-        padding-right: 40px;
-        flex: 1;
-    }
-
-    #curriculum-detail-modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-        align-items: center;
-        justify-content: center;
+    .add-subject-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
     }
 </style>
 
@@ -314,7 +277,7 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2 align='center'>Add Announcement</h2>
-            <form id="announcement-form" method="POST" action="{{ url_for('views.teacher_dashboard') }}">
+            <form id="announcement-form" method="POST" action="{{ url_for('views.teachers_dashboard') }}">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" placeholder="Title of Announcement" required><br><br>
                 <label for="description">Description:</label>
@@ -329,15 +292,17 @@
         <button type="button" class="btn-close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
         </button>
+
     </div>
 
     <div id="announcements-section">
+
         <button id="add-announcement-btn" class="btn">
             <i class="fas fa-pencil-alt"></i> <!-- Pen icon -->
         </button>
 
         <div id="announcements-container">
-            <h2 id="announcements-header" style="color: #3a413c; font-family: 'Open Sans', sans-serif;">Announcements</h2>
+            <h2 style="color: #3a413c; font-family: 'Open Sans', sans-serif;">Announcements</h2>
             {% if announcements|length == 0 %}
                 <p>No Announcements</p>
             {% else %}
@@ -345,11 +310,10 @@
                     <div class="announcement-container" data-title="{{ announcement.title }}" data-description="{{ announcement.description }}">
                         <h3>{{ announcement.title }}</h3>
                         <p>{{ announcement.description }}</p>
-                        <form action="{{ url_for('views.teacher_dashboard') }}" method="post" style="display: inline;">
-                            <input type="hidden" name="announcement_id" value="{{ announcement.id }}">
-                            <button type="submit" class="delete-button btn btn-delete">
+
+                        <form action="{{ url_for('views.delete_announcement', announcement_id=announcement.id) }}" method="post" style="display: inline;">
+                            <button type="del" class=" delete-button btn btn-delete">
                                 <i class="fas fa-trash-alt"></i>
-                            </button>
                         </form>
                     </div>
                 {% endfor %}
@@ -364,25 +328,53 @@
                 <p id="announcement-modal-description"></p>
             </div>
         </div>
-    </div>
-    
-    <div id="subjects-section">
-        <h2>Subjects</h2>
-        <div id="subjects-container">
-            {% for curriculum in curriculums %}
-                <div class="curriculum-container">
-                    <h3>{{ curriculum.subjects }}</h3>
-                    <p>Grade: {{ curriculum.grade.grade }}</p>
-                    <p>Schedule: {{ curriculum.schedule.schedule }}</p>
-                    <p>Teacher: {{ curriculum.teacher }}</p>
-                </div>
-            {% endfor %}
+
+        <!-- Subject Section -->
+        <div id="subject-section" style="display: none;">
+            <button id="add-subject-btn" class="btn btn-primary">
+                Add Subject <i class="fa fa-plus"></i>
+            </button>
+            <div id="subject-tiles">
+                <!-- Subject tiles will be added here dynamically -->
+            </div>
         </div>
     </div>
-</div>
     
-
-
+    <!-- Add Subject Modal -->
+    <div id="add-subject-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="add-subject-close">&times;</span>
+            <h2>Add Subject</h2>
+            <form id="add-subject-form">
+                <label for="subject-name">Subject Name:</label>
+                <input type="text" id="subject-name" name="subject_name" required>
+                <label for="grade-level">Grade Level:</label>
+                <input type="text" id="grade-level" name="grade_level" required>
+                <label for="schedule-from">Schedule From:</label>
+                <input type="time" id="schedule-from" name="schedule_from" required>
+                <label for="schedule-to">Schedule To:</label>
+                <input type="time" id="schedule-to" name="schedule_to" required>
+                <button type="submit" class="btn btn-primary">Add Subject</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Subject Details Modal -->
+    <div id="subject-details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="subject-details-close">&times;</span>
+            <h2 id="subject-title"></h2>
+            <form id="add-student-form">
+                <label for="student-name">Student Name:</label>
+                <input type="text" id="student-name" name="student_name" required>
+                <label for="student-email">Student Email:</label>
+                <input type="email" id="student-email" name="student_email" required>
+                <button type="submit" class="btn btn-primary">Add Student</button>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -396,42 +388,15 @@
         const closeBtnDetail = announcementDetailModal ? announcementDetailModal.querySelector('.close') : null;
         const modalTitle = document.getElementById('announcement-modal-title');
         const modalDescription = document.getElementById('announcement-modal-description');
-    
-        const subjectsBtn = document.getElementById('subjects-btn');
-        const subjectsSection = document.getElementById('subjects-section');
-        const curriculumDetailModal = document.getElementById('curriculum-detail-modal');
-        const closeCurriculumDetail = document.getElementById('curriculum-detail-close');
-        const curriculumContainers = document.querySelectorAll('.curriculum-container');
+        const form = document.getElementById('announcement-form');
+        const notification = document.getElementById('announcement-notification');
         const body = document.body;
+        const deleteButtons = document.querySelectorAll('.btn-danger');
     
-        // Function to show and hide elements
         function toggleElement(element, show) {
-            element.style.display = show ? 'flex' : 'none';
-        }
-    
-        // Function to toggle announcements header visibility
-        function toggleAnnouncementsHeader() {
-            const hasAnnouncements = announcementsContainer.querySelectorAll('.announcement-container').length > 0;
-            announcementsHeader.style.display = hasAnnouncements ? 'block' : 'none';
-        }
-    
-        // Event listener for announcements button
-        if (announcementsBtn) {
-            announcementsBtn.addEventListener('click', function(event) {
-                event.preventDefault();
-                toggleElement(announcementsSection, true);
-                toggleElement(addAnnouncementBtn, true);
-                toggleElement(subjectsSection, false);
-            });
-        }
-    
-        // Event listener for subjects button
-        if (subjectsBtn) {
-            subjectsBtn.addEventListener('click', function(event) {
-                event.preventDefault();
-                toggleElement(subjectsSection, true);
-                toggleElement(announcementsSection, false);
-            });
+            if (element) {
+                element.style.display = show ? 'flex' : 'none'; // Use 'flex' to ensure the modal is centered
+            }
         }
     
         // Event listener for announcement containers
@@ -439,21 +404,32 @@
             announcementsContainer.addEventListener('click', function(event) {
                 const target = event.target.closest('.announcement-container');
                 if (target) {
-                    const title = target.querySelector('h3').innerText;
-                    const description = target.querySelector('p').innerText;
+                    const title = target.getAttribute('data-title');
+                    const description = target.getAttribute('data-description');
                     modalTitle.innerText = title;
                     modalDescription.innerText = description;
                     toggleElement(announcementDetailModal, true);
-                    body.classList.add('blur-background'); // Apply background blur
+                    body.classList.add('blur-background'); // Apply background blu
+
                 }
             });
         }
+    
+        // Handle announcements button click
+        if (announcementsBtn) {
+            announcementsBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                toggleElement(announcementsSection, true);
+                toggleElement(addAnnouncementBtn, true);
+            });
+        }
+        
     
         // Show the add announcement modal
         if (addAnnouncementBtn && addAnnouncementModal) {
             addAnnouncementBtn.addEventListener('click', function() {
                 toggleElement(addAnnouncementModal, true);
-                body.classList.add('blur-background');
+                body.classList.add('blur-background'); // Apply background blur
             });
         }
     
@@ -461,7 +437,7 @@
         if (closeBtnAdd) {
             closeBtnAdd.addEventListener('click', function() {
                 toggleElement(addAnnouncementModal, false);
-                body.classList.remove('blur-background');
+                body.classList.remove('blur-background'); // Remove background blur
             });
         }
     
@@ -469,90 +445,157 @@
         if (closeBtnDetail) {
             closeBtnDetail.addEventListener('click', function() {
                 toggleElement(announcementDetailModal, false);
-                body.classList.remove('blur-background');
+                body.classList.remove('blur-background'); // Remove background blur
             });
         }
     
         // Close modals when clicking outside of them
         window.addEventListener('click', function(event) {
-            if (event.target === addAnnouncementModal) {
+            if (event.target == addAnnouncementModal) {
                 toggleElement(addAnnouncementModal, false);
-                body.classList.remove('blur-background');
-            } else if (event.target === announcementDetailModal) {
+                body.classList.remove('blur-background'); // Remove background blur
+            } else if (event.target == announcementDetailModal) {
                 toggleElement(announcementDetailModal, false);
-                body.classList.remove('blur-background');
-            } else if (event.target === curriculumDetailModal) {
-                toggleElement(curriculumDetailModal, false);
-                body.classList.remove('blur-background');
+                body.classList.remove('blur-background'); // Remove background blur
             }
         });
     
-        // Handle form submission and show notification for announcements
-        const announcementForm = document.getElementById('announcement-form');
-        if (announcementForm) {
-            announcementForm.addEventListener('submit', function(event) {
+        // Handle form submission and show notification
+        if (form) {
+            form.addEventListener('submit', function(event) {
                 event.preventDefault();
-                const formData = new FormData(announcementForm);
-
-                fetch(announcementForm.action, {
+                const formData = new FormData(form);
+    
+                fetch(form.action, {
                     method: 'POST',
                     body: formData,
                 }).then(response => {
                     if (response.ok) {
                         toggleElement(addAnnouncementModal, false);
-                        body.classList.remove('blur-background');
-                        // Show success alert
-                        const alert = document.getElementById('announcement-notification');
-                        if (alert) {
-                            alert.style.display = 'block';
-                            setTimeout(() => alert.style.display = 'none', 3000); // Hide after 3 seconds
-                        }
+                        body.classList.remove('blur-background'); // Remove background blur
+                        toggleElement(notification, true);
+                        setTimeout(() => toggleElement(notification, false), 3000);
                         // Optionally, refresh announcements
                         // location.reload();
                     }
                 });
             });
         }
-
     
-        const deleteButtons = document.querySelectorAll('.btn-delete');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                if (!confirm('Are you sure you want to delete this announcement?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-    
-        // Event listener for curriculum containers
-        curriculumContainers.forEach(container => {
-            container.addEventListener('click', function() {
-                const title = container.getAttribute('data-title');
-                const details = container.getAttribute('data-details');
-                const modalTitle = document.getElementById('curriculum-modal-title');
-                const modalDetails = document.getElementById('curriculum-modal-details');
-                modalTitle.innerText = title;
-                modalDetails.innerText = details;
-                toggleElement(curriculumDetailModal, true);
-                body.classList.add('blur-background');
-    });
-});
-    
-        // Close the curriculum detail modal
-        if (closeCurriculumDetail) {
-            closeCurriculumDetail.addEventListener('click', function() {
-                toggleElement(curriculumDetailModal, false);
-                body.classList.remove('blur-background');
-            });
-        }
-    
-        // Initialize by hiding both sections
+        // Hide announcements section initially
         toggleElement(announcementsSection, false);
         toggleElement(addAnnouncementBtn, false);
-        toggleElement(subjectsSection, false);
     });
-    </script>
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!confirm('Are you sure you want to delete this announcement?')) {
+                e.preventDefault();
+            }
+        });
+    });
     
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const subjectsBtn = document.getElementById('subjects-btn');
+        const subjectSection = document.getElementById('subject-section');
+        const addSubjectBtn = document.getElementById('add-subject-btn');
+        const addSubjectModal = document.getElementById('add-subject-modal');
+        const addSubjectClose = document.getElementById('add-subject-close');
+        const addSubjectForm = document.getElementById('add-subject-form');
+        const subjectTiles = document.getElementById('subject-tiles');
+        const subjectDetailsModal = document.getElementById('subject-details-modal');
+        const subjectDetailsClose = document.getElementById('subject-details-close');
+        const subjectTitle = document.getElementById('subject-title');
+        const addStudentForm = document.getElementById('add-student-form');
+
+        function toggleElement(element, show) {
+            element.style.display = show ? 'block' : 'none';
+        }
+    
+        // Toggle subject section visibility
+        subjectsBtn.addEventListener('click', function() {
+            if (subjectSection.style.display === 'none' || subjectSection.style.display === '') {
+                subjectSection.style.display = 'block';
+            } else {
+                subjectSection.style.display = 'none';
+            }
+        });
+    
+        // Open add subject modal
+        addSubjectBtn.addEventListener('click', function() {
+            addSubjectModal.style.display = 'block';
+        });
+    
+        // Close add subject modal
+        addSubjectClose.addEventListener('click', function() {
+            addSubjectModal.style.display = 'none';
+        });
+    
+        // Handle add subject form submission
+        addSubjectForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const subjectName = document.getElementById('subject-name').value;
+            const gradeLevel = document.getElementById('grade-level').value;
+            const scheduleFrom = document.getElementById('schedule-from').value;
+            const scheduleTo = document.getElementById('schedule-to').value;
+    
+            // Create subject tile
+            const subjectTile = document.createElement('div');
+            subjectTile.classList.add('subject-tile');
+            subjectTile.innerHTML = `
+                <h3>${subjectName}</h3>
+                <p>Grade Level: ${gradeLevel}</p>
+                <p>Schedule: ${scheduleFrom} - ${scheduleTo}</p>
+                <button class="btn btn-primary" onclick="openSubjectDetails('${subjectName}')">View Details</button>
+            `;
+    
+            subjectTiles.appendChild(subjectTile);
+    
+            // Close add subject modal
+            addSubjectModal.style.display = 'none';
+    
+            // Clear form fields
+            addSubjectForm.reset();
+        });
+    
+        // Open subject details modal
+        window.openSubjectDetails = function(subjectName) {
+            subjectTitle.innerText = subjectName;
+            subjectDetailsModal.style.display = 'block';
+        }
+    
+        // Close subject details modal
+        subjectDetailsClose.addEventListener('click', function() {
+            subjectDetailsModal.style.display = 'none';
+        });
+    
+        // Handle add student form submission
+        addStudentForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const studentName = document.getElementById('student-name').value;
+            const studentEmail = document.getElementById('student-email').value;
+    
+            // Add student to the subject (this would require additional server-side handling)
+    
+            // Close subject details modal
+            subjectDetailsModal.style.display = 'none';
+    
+            // Clear form fields
+            addStudentForm.reset();
+        });
+    
+        // Close modals when clicking outside of them
+        window.addEventListener('click', function(event) {
+            if (event.target == addSubjectModal) {
+                addSubjectModal.style.display = 'none';
+            }
+            if (event.target == subjectDetailsModal) {
+                subjectDetailsModal.style.display = 'none';
+            }
+        });
+    });
+    
+</script>
+
 {% endblock %}
-
-

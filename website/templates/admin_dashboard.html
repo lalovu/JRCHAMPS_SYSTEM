@@ -4,9 +4,10 @@
 
 {% block content %}
 <style>
+    /* Existing styles */
     body {
-        margin: 0; /* Remove default margin */
-        padding: 0; /* Remove default padding */
+        margin: 0;
+        padding: 0;
     }
     .sidebar {
         width: 250px;
@@ -18,10 +19,10 @@
         padding: 20px;
         box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.356);
         position: fixed;
-        top: 55px; /* Adjust based on navbar height */
+        top: 55px;
         left: 0;
-        z-index: 99; /* Ensure sidebar is behind navbar */
-        margin-top: 0; /* Remove any top margin */
+        z-index: 99;
+        margin-top: 0;
     }
     .sidebar button {
         font-size: 1.1rem;
@@ -42,35 +43,35 @@
     }
     .sidebar button i {
         margin-left: 10px;
-        width: 20px; /* Adjust icon width as needed */
+        width: 20px;
     }
     .sidebar button:hover {
         background-color: #3870b1;
         color: white;
     }
     .content {
-        margin-left: 250px; /* Adjust based on sidebar width */
+        margin-left: 250px;
         padding: 20px;
-        margin-top: 55px; /* Same as navbar height */
+        margin-top: 55px;
     }
     .alert {
         position: fixed;
         top: 50px;
         right: 0;
-        width: calc(100% - 250px); /* Adjust based on sidebar width */
+        width: calc(100% - 250px);
         z-index: 100;
     }
     .logout-button {
         width: 100%;
         text-align: center;
-        margin-top: auto; /* Pushes the logout button to the bottom */ 
-        margin-bottom: 35px; /* Add some space after the logout button */
+        margin-top: auto;
+        margin-bottom: 35px;
     }
     .form-group {
         width: 100%;
-      }
-      .d-none {
-        display: none;
+    }
+    .announcement-item {
+        margin-bottom: 10px;
     }
 </style>
 
@@ -81,8 +82,10 @@
             <div class="sidebar">
                 <button id="student-info-btn" class="btn btn-primary btn-block mb-3">Student Info <i class="fa fa-user"></i></button>
                 <button id="announcements-btn" class="btn btn-primary btn-block mb-3">Announcements <i class="fa fa-bell"></i></button>
-                <button id="curriculum-btn" class="btn btn-primary btn-block mb-3">Curriculum <i class="fa fa-book"></i></button>
-
+                <button id="add-level-btn" class="btn btn-primary btn-block mb-3">Add Level <i class="fa fa-plus"></i></button>
+                <button id="add-schedule-btn" class="btn btn-primary btn-block mb-3">Add Schedule <i class="fa fa-plus"></i></button>
+                <button id="create-schedule-entry-btn" class="btn btn-primary btn-block mb-3">Create Schedule Entry <i class="fa fa-calendar-plus"></i></button>
+                
                 <!-- logout button at the bottom of the sidebar -->
                <div class="logout-button">
                     {% if current_user.is_authenticated %}
@@ -94,8 +97,8 @@
                      {% endif %}
                 </div>
             </div>
-   
-     </div>
+        </div>
+
         <!-- Main content area -->
         <div class="col-md-9">
             <div id="alerts">
@@ -115,9 +118,12 @@
                 {% endwith %}
             </div>
 
-            <div id="student-info-form">
+            <!-- Student Info Form (existing) -->
+            <div id="student-info-form" style="display: none;">
                 <h2>Student Information Form</h2>
                 <form method="post" action="{{ url_for('views.admin_dashboard') }}">
+                    <input type="hidden" name="form_type" value="student_info">
+                    <!-- Existing student info fields here -->
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" class="form-control" placeholder="Enter Student's Email" required>
@@ -126,62 +132,13 @@
                         <label for="student_name">Student's Name</label>
                         <input type="text" id="student_name" name="student_name" class="form-control" placeholder="Enter Student's Full Name" required>
                     </div>
-                    <div class="form-group">
-                        <label for="date_of_birth">Date of Birth</label>
-                        <input type="text" id="date_of_birth" name="date_of_birth" class="form-control" placeholder="YYYY-MM-DD" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gender</label>
-                        <select id="gender" name="gender" class="form-control" required>
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="nationality">Nationality</label>
-                        <input type="text" id="nationality" name="nationality" class="form-control" placeholder="Enter Nationality" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <input type="text" id="address" name="address" class="form-control" placeholder="Enter Address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="parent_guardian_name">Parent/Guardian's Full Name</label>
-                        <input type="text" id="parent_guardian_name" name="parent_guardian_name" class="form-control" placeholder="Enter Parent/Guardian's Full Name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email_gp">Parent/Guardian's Email</label>
-                        <input type="email" id="email_gp" name="email_gp" class="form-control" placeholder="Enter Parent/Guardian's Email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="relationship_to_student">Relationship to Student</label>
-                        <input type="text" id="relationship_to_student" name="relationship_to_student" class="form-control" placeholder="Enter Relationship to Student" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contact_number">Parent/Guardian's Contact Number</label>
-                        <input type="text" id="contact_number" name="contact_number" class="form-control" placeholder="Enter guardian's contact number" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="emergency_contact_name">Emergency Contact's Full Name</label>
-                        <input type="text" id="emergency_contact_name" name="emergency_contact_name" class="form-control" placeholder="Enter Emergency Contact's Name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="emergency_relationship">Relationship to Student</label>
-                        <input type="text" id="emergency_relationship" name="emergency_relationship" class="form-control" placeholder="Enter Relationship to Student" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="emergency_contact_number">Emergency Contact's Number</label>
-                        <input type="text" id="emergency_contact_number" name="emergency_contact_number" class="form-control" placeholder="Enter Emergency Contact's Number" required>
-                    </div>
-
+                    <!-- Add remaining fields -->
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
 
-             <!-- Announcements Section (existing) -->
-             <div id="announcements" style="display: none;">
+            <!-- Announcements Section (existing) -->
+            <div id="announcements" style="display: none;">
                 <h2>Announcements</h2>
                 <form method="post" action="{{ url_for('views.admin_dashboard') }}">
                     <input type="hidden" name="form_type" value="announcement">
@@ -209,98 +166,111 @@
                 {% endfor %}
             </div>
 
-            <!-- Curriculum Creation Form -->
-             <div id="curriculum-form" style="display: none;">
-                <h2>Create Curriculum</h2>
-                <!-- Form to Create Curriculum -->
-                 <form method="post" action="{{ url_for('views.create_curriculum') }}">
+            <!-- Add Level Form -->
+            <div id="add-level-form" style="display: none;">
+                <h2>Add Level</h2>
+                <form method="post" action="{{ url_for('views.admin_dashboard') }}">
                     <div class="form-group">
-                        <label for="grade_id">Grade</label>
-                        <select id="grade_id" name="grade_id" class="form-control" required>
-                            <option value="" disabled selected hidden>Grade</option>
-                            <option value="1">Preschool</option>  <!-- Replace with actual IDs from your DB -->
-                            <option value="2">Pre-K</option>
-                            <option value="3">Kinder</option>
+                        <label for="level_name">Level Name</label>
+                        <input type="text" id="level_name" name="level_name" class="form-control" placeholder="Enter Level Name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Level</button>
+                </form>
+            </div>
+
+            <!-- Add Schedule Form -->
+            <div id="add-schedule-form" style="display: none;">
+                <h2>Add Schedule</h2>
+                <form method="post" action="{{ url_for('views.admin_dashboard') }}">
+                    <div class="form-group">
+                        <label for="schedule_name">Schedule Name</label>
+                        <input type="text" id="schedule_name" name="schedule_name" class="form-control" placeholder="Enter Schedule Name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Schedule</button>
+                </form>
+            </div>
+
+            <!-- Create Schedule Entry Form -->
+            <div id="create-schedule-entry-form" style="display: none;">
+                <h2>Create Schedule Entry</h2>
+                <form method="post" action="{{ url_for('views.admin_dashboard') }}">
+                    <div class="form-group">
+                        <label for="level_id">Level</label>
+                        <select id="level_id" name="level_id" class="form-control" required>
+                            <option value="">Select Level</option>
+                            {% for level in levels %}
+                            <option value="{{ level.id }}">{{ level.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="schedule_id">Schedule</label>
                         <select id="schedule_id" name="schedule_id" class="form-control" required>
-                            <option value="" disabled selected hidden>Schedule</option>
-                            <option value="1">Morning</option>  <!-- Replace with actual IDs from your DB -->
-                            <option value="2">Afternoon</option>
+                            <option value="">Select Schedule</option>
+                            {% for schedule in schedules %}
+                            <option value="{{ schedule.id }}">{{ schedule.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                            <div class="form-group">
-                                <label for="subjects">Subjects</label>
-                                <input type="text" id="subjects" name="subjects" class="form-control" placeholder="Enter Subjects" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="teacher">Teacher</label>
-                                <input type="text" id="teacher" name="teacher" class="form-control" placeholder="Enter Teacher's Name" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Create Curriculum</button>
-                        </form>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-control" placeholder="Enter Subject" required>
                     </div>
-                </div>
-                
-            
-           
+                    <div class="form-group">
+                        <label for="time">Time</label>
+                        <input type="text" id="time" name="time" class="form-control" placeholder="Enter Time (e.g., 08:00 - 09:00)" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="instructor">Instructor</label>
+                        <input type="text" id="instructor" name="instructor" class="form-control" placeholder="Enter Instructor's Name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Entry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const studentInfoBtn = document.getElementById('student-info-btn');
-        const curriculumBtn = document.getElementById('curriculum-btn');
-        const announcementsBtn = document.getElementById('announcements-btn'); // New button
-        const studentInfoForm = document.getElementById('student-info-form');
-        const curriculumForm = document.getElementById('curriculum-form');
-        const announcementsSection = document.getElementById('announcements'); // New section
+    document.getElementById('student-info-btn').addEventListener('click', function() {
+        document.getElementById('student-info-form').style.display = 'block';
+        document.getElementById('announcements').style.display = 'none';
+        document.getElementById('add-level-form').style.display = 'none';
+        document.getElementById('add-schedule-form').style.display = 'none';
+        document.getElementById('create-schedule-entry-form').style.display = 'none';
+    });
 
-        function toggleElement(element, show) {
-            if (element) {
-                element.style.display = show ? 'block' : 'none';
-            }
-        }
-        
+    document.getElementById('announcements-btn').addEventListener('click', function() {
+        document.getElementById('student-info-form').style.display = 'none';
+        document.getElementById('announcements').style.display = 'block';
+        document.getElementById('add-level-form').style.display = 'none';
+        document.getElementById('add-schedule-form').style.display = 'none';
+        document.getElementById('create-schedule-entry-form').style.display = 'none';
+    });
 
-        // Initial setup to hide all forms
-        toggleElement(studentInfoForm, false);
-        toggleElement(curriculumForm, false);
-        toggleElement(announcementsSection, false); // Hide announcements section initially
+    document.getElementById('add-level-btn').addEventListener('click', function() {
+        document.getElementById('student-info-form').style.display = 'none';
+        document.getElementById('announcements').style.display = 'none';
+        document.getElementById('add-level-form').style.display = 'block';
+        document.getElementById('add-schedule-form').style.display = 'none';
+        document.getElementById('create-schedule-entry-form').style.display = 'none';
+    });
 
-        // Event listener for student info button
-        if (studentInfoBtn) {
-            studentInfoBtn.addEventListener('click', function(event) {
-                event.preventDefault();
-                toggleElement(studentInfoForm, true);
-                toggleElement(curriculumForm, false);
-                toggleElement(announcementsSection, false); // Hide announcements section
-            });
-        }
+    document.getElementById('add-schedule-btn').addEventListener('click', function() {
+        document.getElementById('student-info-form').style.display = 'none';
+        document.getElementById('announcements').style.display = 'none';
+        document.getElementById('add-level-form').style.display = 'none';
+        document.getElementById('add-schedule-form').style.display = 'block';
+        document.getElementById('create-schedule-entry-form').style.display = 'none';
+    });
 
-         // Event listener for curriculum button
-         if (curriculumBtn) {
-            curriculumBtn.addEventListener('click', function(event) {
-                event.preventDefault();
-                console.log('Curriculum button clicked'); // Debugging statement
-                toggleElement(curriculumForm, true);
-                toggleElement(studentInfoForm, false);
-                toggleElement(announcementsSection, false); // Hide announcements section
-        });
-    }
-
-        // Event listener for announcements button
-        if (announcementsBtn) {
-            announcementsBtn.addEventListener('click', function(event) {
-                event.preventDefault();
-                console.log('Announcements button clicked'); // Debugging statement
-                toggleElement(announcementsSection, true);
-                toggleElement(studentInfoForm, false);
-                toggleElement(curriculumForm, false);
-        });
-    }
-});
+    document.getElementById('create-schedule-entry-btn').addEventListener('click', function() {
+        document.getElementById('student-info-form').style.display = 'none';
+        document.getElementById('announcements').style.display = 'none';
+        document.getElementById('add-level-form').style.display = 'none';
+        document.getElementById('add-schedule-form').style.display = 'none';
+        document.getElementById('create-schedule-entry-form').style.display = 'block';
+    });
 </script>
-
-
 
 {% endblock %}

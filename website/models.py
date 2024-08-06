@@ -1,7 +1,7 @@
 from . import db
 from flask_login import UserMixin
-from flask_migrate import Migrate
 import enum
+
 
 class Role(enum.Enum):
     student = "student"
@@ -52,30 +52,24 @@ class Announcement(db.Model):
     def __repr__(self):
         return f'<Announcement {self.title}>'
     
-class Grade(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    grade = db.Column(db.String(100), nullable=False)  # Changed to String for consistency
-
-    def __repr__(self):
-        return f'<Grade {self.grade}>'
 
 class Schedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    schedule = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(50), nullable=False, unique=True)
 
-    def __repr__(self):
-        return f'<Schedule {self.schedule}>'
-
-class CreatingClass(db.Model):
+class Level(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    grade_id = db.Column(db.Integer, db.ForeignKey('grade.id'), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+
+class Curriculum(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    level_id = db.Column(db.Integer, db.ForeignKey('level.id'), nullable=False)
     schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id'), nullable=False)
-    subjects = db.Column(db.String(150), nullable=False)
-    teacher = db.Column(db.String(100), nullable=False)
+    subject = db.Column(db.String(100), nullable=False)
+    time = db.Column(db.String(50), nullable=False)
+    instructor = db.Column(db.String(100), nullable=False)
 
-    # Relationships
-    grade = db.relationship('Grade', backref='curriculums')
-    schedule = db.relationship('Schedule', backref='curriculums')
+    level = db.relationship('Level', backref=db.backref('curricula', lazy=True))
+    schedule = db.relationship('Schedule', backref=db.backref('curricula', lazy=True))
 
-    def __repr__(self):
-        return f'<CreatingClass Grade {self.grade_id}, Schedule {self.schedule_id}, Subjects {self.subjects}>'
+
